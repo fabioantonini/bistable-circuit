@@ -1,0 +1,137 @@
+% imex2.tex		example file of pscirc0.sty
+% Nov 8, 1997
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\documentclass[12pt,a4paper]{article}
+\usepackage{pscirc0}
+%%%%
+
+\begin{document}
+
+\begin{center}
+\begin{tabular}{ccccc}
+\verb"\psv" & \verb"\psa" & \verb"\psr" & \verb"\psnr" & \verb"\psl" \\
+%% 1
+\begin{pspicture}(-1,-1)(1,1)\showgrid  
+\psen\psv
+\end{pspicture}
+& %2
+\begin{pspicture}(-1,-1)(1,1)\showgrid  
+\psen\psa
+\end{pspicture}
+& %3
+\begin{pspicture}(-1,-1)(1,1)\showgrid  
+\psen\psr
+\end{pspicture}
+& %4
+\begin{pspicture}(-1,-1)(1,1)\showgrid  
+\psen\psnr
+\end{pspicture}
+& %5
+\begin{pspicture}(-1,-1)(1,1)\showgrid  
+\psen\psl
+\end{pspicture} \\
+&&&&\\
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\verb"\psc" &\verb"\psinv" &\verb"\pstl{2}" &\verb"\pstt" &\verb"\psatt" \\
+%% 1
+\begin{pspicture}(-1,-1)(1,1)\showgrid  
+\psen\psc
+\end{pspicture}
+& %2
+\begin{pspicture}(-1,-1)(1,1)\showgrid  
+\psen\psinv
+\end{pspicture}
+& %3
+\begin{pspicture}(-1,-1)(1,1)\showgrid  
+\psen\pstl{2}
+\end{pspicture}
+& %4
+\begin{pspicture}(-1,-1)(1,1)\showgrid  
+\psen\pstt
+\end{pspicture}
+& %5
+\begin{pspicture}(-1,-1)(1,1)\showgrid  
+\psen\psatt
+\end{pspicture} \\
+&&&&\\
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\verb"\pscv" &\verb"\psci" &\verb"\psid" &\verb"\psd" &\verb"\psba" \\
+%% 1
+\begin{pspicture}(-1,-1)(1,1)\showgrid  
+\psen\pscv
+\end{pspicture}
+& %2
+\begin{pspicture}(-1,-1)(1,1)\showgrid  
+\psen\psci
+\end{pspicture}
+& %3
+\begin{pspicture}(-1,-1)(1,1)\showgrid  
+\psen\psid
+\end{pspicture}
+& %4
+\begin{pspicture}(-1,-1)(1,1)\showgrid  
+\psen\psd
+\end{pspicture}
+& %5
+\begin{pspicture}(-1,-1)(1,1)\showgrid  
+\psen\psba
+\end{pspicture} \\
+&&&&\\
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\verb"\psnul" &\verb"\psnor" &&& \\
+%% 1
+\begin{pspicture}(-1,-1)(1,1)\showgrid  
+\psen\psnul
+\end{pspicture}
+& %2
+\begin{pspicture}(-1,-1)(1,1)\showgrid  
+\psen\psnor
+\end{pspicture}
+&&&\\
+&&&&\\
+%
+\end{tabular}
+\end{center}
+%%%%
+
+\begin{center}
+\begin{tabular}{ccc}
+\verb"\psccoa{0}(0,0){a1}{3}" & \verb"\pscwoa{0}(0,0){a1}{3}" & \verb"\pstp{0}(0,0){z1}{4}{2}" \\
+%% 1
+\begin{pspicture}(-2,-1)(2,1)\showgrid  
+\psen\psccoa{0}(0,0){a1}{3}
+\end{pspicture}
+& %2
+\begin{pspicture}(-2,-1)(2,1)\showgrid  
+\psen\pscwoa{0}(0,0){a1}{3}
+\end{pspicture}
+& %3
+\begin{pspicture}(-2,-2)(2,2)\showgrid  
+\psen\pstp{0}(0,0){z1}{4}{2}
+\end{pspicture} \\
+&&\\
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\verb"\psit{0}(0,0){k1}{3}" & \verb"\psig{0}(0,0){g1}{3}" &
+\verb"\psll{0}(0,0){g1}{3}"\\
+%%1
+\begin{pspicture}(-1,-2)(1,2)\showgrid  
+\psen\psit{0}(0,0){k1}{3}
+\end{pspicture} 
+& %2
+\begin{pspicture}(-1,-2)(1,2)\showgrid  
+\psen\psig{0}(0,0){g1}{3}
+\end{pspicture} 
+& %3
+\begin{pspicture}(-1,-2)(1,2)\showgrid  
+\psen\psll{0}(0,0){t1}{3}
+\end{pspicture} \\
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+\end{tabular}
+\end{center}
+%%%%
+
+
+\end{document}

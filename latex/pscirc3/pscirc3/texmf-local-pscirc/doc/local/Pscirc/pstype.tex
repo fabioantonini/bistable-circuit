@@ -1,0 +1,198 @@
+% pstype.tex		prototypes of pscirc commands
+%
+% A.Premoli and I.Maio
+% Sep 4, 1998
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\documentclass[12pt,a4paper]{article}
+%\usepackage{pscirc3}
+\usepackage{pst-circ}
+\addtolength{\textwidth}{3cm}
+\addtolength{\oddsidemargin}{-1.5cm}
+
+
+\title{\bfseries\vspace*{-1.5cm}
+\texttt{pstype.tex}: prototypes of pscirc commands}
+\author{A. Premoli and I. Maio}
+\date{29 September 98}
+%%%%
+
+\begin{document}
+\maketitle
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection*{Command types}
+\begin{itemize}
+\item[(1)] headings
+\item[(2)] environment
+\item[(3)] pstrick nodes
+\item[(4)] auxiliary elements
+\item[(5)] 2-terminal elements
+\item[(6)] reference directions
+\item[(7)] multiport elements
+\end{itemize}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{verbatim}
+
+1 headings			%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[12pt,a4paper]{article}
+\usepackage{pscirc3}
+
+\pnode(){n1}\pnode(){n2}\pnode(){n3}\pnode(){n4}\pnode(){n5}\pnode(){n6}\pnode(){n7}\pnode(){n8}\pnode(){n9}\pnode(){n10}\pnode(){n11}\pnode(){n12}\pnode(){n13}\pnode(){n14}\pnode(){n15}\pnode(){n16}\pnode(){n17}\pnode(){n18
+
+2 environment		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% \psset modifies default units of x and y, num_length is a real number
+%% with units (eg; pt, mm, cm, ...), if units are dropped cm are assumed
+%% \psgrids draws a reference grid
+%
+%\psset{unit=	num_length}
+\begin{pspicture}(x size, y size)
+\psen
+%\psgrid
+
+... commands drawing the circuit ...
+
+\end{pspicture}
+
+
+3 pstrick nodes		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% single node defined by absolute coordinate
+\pnode(x,y){node_name}
+
+%% single node defined by shifted coordinates
+%% ie, node_name is located at
+%% (x_reference_node_name+dx,y_reference_node_name+dy)
+\pnoder(reference_node_name)(dx,dy){node_name}
+
+%% grid of nodes, llc=lower left corner of the grid frame
+\psng(x_llc_offset,y_llc_offset)(x_step,y_step){no_x_nodes}{no_y_nodes}
+
+
+4 auxiliary elements	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% node
+\psn(x,y)
+\psn(node_name)
+
+%% terminal head
+\psth(x,y)
+\psth(node_name)
+
+%% arrow head, plus and minus symbols (to be placed by pst commands)
+\psah
+\plu
+\mnu
+
+%% white spot to denote conductor crossings
+\psdot[dotsize=.25,linecolor=white](x,y)
+\psdot[dotsize=.25,linecolor=white](node_name)
+
+%% one-terminal with ground
+\psgr(x,y)
+\psgr(node_name)
+
+%% basic placement and labelling commands ...
+%% relative placement
+\uput{label_distance}[label_angle(u,r,l,... or_degree)](x,y){label}
+\uput{label_distance}[label_angle(u,r,l,... or_degree)](node_name){label}
+%% absolute placement
+\rput{rotation_angle}(x,y){stuff}
+\rput{rotation_angle}(node_name){stuff}
+
+%% piecewise linear curve connecting several points, point coordinates
+%% can be specified by different formats
+\psline[linestyle=(dashed,dotted)]%
+(x1,y1)(node_name2)(node_nameA|node_nameB)...
+
+%% line to connect two nodes and to bear a current reference direction
+%% (\pssa)
+\ttput(plus_node_name)(minus_node_name){}
+\pssa{arrow_dist}{arrow_way(0=loads,180=sources)}
+{label_distance}{label_angle(u,r,l,... or_degree)}{label}
+
+%% curve connecting several points, point coordinates
+%% can be specified by different formats
+%% the arrow argument produce an arrow head at the hend of the curve
+\pscurve[linestyle=(dashed,dotted)]{->}%
+(x1,y1)(node_name2)(node_nameA|node_nameB)...
+
+%% arc to connect two nodes and to bear a current reference direction
+%% (\pssa)
+\pcarc[arcangle= ](minus_node_name)(plus_node_name)%
+\pssa{arrow_dist}{arrow_way(0=loads,180=sources)}
+{label_distance}{label_angle(u,r,l,... or_degree)}{label}
+
+
+5 two-terminal elements %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 2-terminal element and its label,
+%% label_distance>0 and label_angle is referred to the positive x axis
+\ttput(plus_node_name)(minus_node_name){element_name}
+\ncput{\uput{label_distance}[label_angle(u,r,l,... or_degree)](0,0){label}}
+
+6 reference directions %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% free arrow (to draw the reference direction of the voltage between
+%% a node pair and the reference direction of current entering/leaving
+%% a terminal)
+%% if arc_param > 0 the arrow is curved like a right hand corner
+%% label_distance>0 and label_angle is referred to the positive x axis
+\psfa(plus_node_name)(minus_node_name){arc_param}
+{label_distance}{label_angle(u,r,l,... or_degree)}{label}
+
+%% superimposed arrow (to draw a current reference direction on a terminal)
+%% the command is to be appended to the command placing the element
+%% whose terminal carries the refenced current,
+%% arrow_distance shifts the harrow head of arrow_distance from the element
+%% center toward the positive node,
+%% label_distance>0, and label_angle is referred to the positive x axis
+\pssa{arrow_dist}{arrow_way(0=orientation according to associate reference directions,180= the opposite orientation)}
+{label_distance}{label_angle(u,r,l,... or_degree)}{label}
+
+
+7 multiport elements %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% counter-clockwise OA
+%% node names at terminal heads are root_node_names(m,p,o,g)
+\psccoa{angle}(center_node){root_node_names}{overall_length}
+
+%% clockwise OA
+%% node names at terminal heads are root_node_names(m,p,o,g)
+\psen\pscwoa{angle}(center_node){root_node_names}{overall_length}
+
+%% two-port element
+%% node names at terminal heads are root_node_names(11,12) left
+%% and root_node_names(21,22) right
+\pstp{angle}(center_node){root_node_names}{overall_length}{port_width}
+
+%% nullor
+%% node names at terminal heads are root_node_names(11,12) left
+%% and root_node_names(21,22) right
+\psnn{angle}(center_node){root_node_names}{overall_length}{port_width}
+
+%% three-terminal element
+%% node names at terminal heads are root_node_names(1,2,g)
+\psttt{angle}(center_node){root_node_names}{overall_length}
+{terminal_height}
+
+%% three-terminal nullor
+%% node names at terminal heads are root_node_names(1,2,g)
+\psnnt{angle}(center_node){root_node_names}{overall_length}
+{terminal_height}
+
+%% ideal transformer
+%% node names at terminal heads are root_node_names(11,12) left
+%% and root_node_names(21,22) right
+\psit{angle}(center_node){root_node_names}{port_width}
+
+%% ideal gyrator
+%% node names at terminal heads are root_node_names(11,12) left
+%% and root_node_names(21,22) right
+\psig{angle}(center_node){root_node_names}{port_width}
+
+%% coupled inductors
+%% node names at terminal heads are root_node_names(11,12) left
+%% and root_node_names(21,22) right
+\psll{angle}(center_node){root_node_names}{port_width}
+
+\end{verbatim}
+
+\end{document}

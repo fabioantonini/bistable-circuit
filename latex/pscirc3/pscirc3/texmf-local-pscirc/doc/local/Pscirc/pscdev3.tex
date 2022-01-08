@@ -1,0 +1,255 @@
+% pscdev3.tex		report sullo sviluppo di pscirc0.sty
+% Nov 5, 1997
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\documentclass[12pt,a4paper]{articolo}
+\usepackage{pscirc0}
+
+\addtolength{\topmargin}{-1cm}
+\addtolength{\textheight}{2cm}
+\addtolength{\textwidth}{4cm}
+\addtolength{\oddsidemargin}{-2cm}
+%%%%
+
+\title{\bfseries\vspace*{-1.5cm}
+Principi e struttura del pacchetto \texttt{pscirc0.sty}}
+\author{I. Maio}
+\date{6 Novembre 97}
+%%%%
+
+\begin{document}
+\maketitle
+
+La definizione di un linguaggio formale per la descrizione degli schemi elettrici e la sua implementazione attraverso macroistruzioni PSTricks \`e un compito difficile.
+Dopo tentativi vani, ho rinunciato alla ricerca di una soluzione ottima e ho scelto di offrire pi\`u comandi per il posizionamento degli elementi a due terminali.
+
+Questa scelta ha tre vantaggi:
+(1)~lascia all'utente la decisione sulla strategia preferita per costruire lo schema;
+(2)~\`e conforme alla filosofia di PSTricks, che \`e fondato su comandi per il posizionamento di oggetti grafici generici;
+(3)~separa la definizione dei simboli degli elementi circuitali da quella dei comandi usati per posizionarli.
+Con questa scelta, un'unica libreria di simboli grafici \`e posizionabile attraverso nuovi criteri semplicemente costruendo nuove macroistruzioni di posizionamento.
+Coerentemente alla precedenti osservazioni, ho anche privilegiato l'uso  di comandi primitivi di PSTricks (ad esempio per le etichette) e la creazione di macroistruzioni con funzioni semplici rispetto alla creazione di macroistruzioni con funzioni complesse. 
+
+\section{Struttura del pacchetto}
+
+\paragraph{Specificazione dei punti}
+Il pacchetto sfrutta l'estensione \texttt{pst-nod} e assume che sia attiva l'opzione \texttt{SpecialCoor}.
+In questo modo, i punti del piano usati per comporre il disegno si possono specificare in diversi modi:\\
+(1)~mediante coordinate esplicite \texttt{(x,y)},\\
+(2)~mediante nomi \texttt{(pippo)} dove \texttt{pippo} \`e definito da \verb"\pnode(x,y){pippo}",\\
+(3)~mediante coordinate miste \texttt{(pippo|paperino)} e \texttt{(x,y|pippo)}.\\
+Per ampliare le possibilit\`a ho aggiunto un comando per assegnare nomi a punti specificati attaverso \textbf{coordinate relative}:\\
+\verb"\pnoder(x,y)(dx,dy){pluto}" assegna il nome \texttt{pluto} al punto di coordinate \verb"(x+dx,y+dy)".
+
+\paragraph{Connessioni}
+La tracciatura delle connessioni \`e completamente affidata ai comandi primitivi di PSTricks.
+I comandi primitivi sono classificabili in tre tipi diversi:\\
+(1)~semplici (esempio \verb"\psline..."),\\
+(2)~emulatori di connessioni tra nomi (esempio \verb"\pcarc..."),\\
+(3)~connessioni tra nomi (esempio \verb"\ncline...").\\
+Nei comandi di tipo (1) e (2) i punti possono essere specificati con una qualunque mescola dei modi possibili, nei comandi di tipo tre i punti devono essere specificati da nomi.
+
+Tutti i tipi di comandi sono utili, i comandi di tipo (1) permettono spezzate e curve descritte da pi\`u di due punti, quelli di tipo (2) gestiscono automaticamente parametri ausiliari che automatizzano il posizionamento di ulteriori elementi sulle connessioni e quelli di tipo (3) aggiungono ulteriori gradi di libert\`a.
+
+\paragraph{Simboli nudi}
+La parte principale del pacchetto \`e una libreria di simboli ausiliari (nodi elettrici, teste di terminali, teste di frecce) e di simboli di nuclei di elementi a due terminali (cioe` elementi a due terminali privati degli stessi).
+I nuclei sono tutti disposti in posizione orizzontale con il morsetto positivo (oppure, per elementi non lineari, quello evidenziato) verso destra e sono ``opachi''.
+I nomi dei comandi per la tracciatura di questi simboli hanno la struttura \verb"\ps"\textit{nome}, dove \textit{nome} identifica l'oggetto e, quando possibile, segue la sintassi \texttt{Spice}.
+Esempio \verb"\psr" e \verb"\pstt" tracciano in (0,0) e orientati orizzontalmente un resistore e un elemento generico a due terminali senza i terminali.
+
+\paragraph{Posizionamento degli elementi a due terminali}
+Ho considerato tre regole diverse.
+\begin{enumerate}
+
+\item
+\textbf{Posizionamento del nucleo attraverso il centro}\\
+Si ottiene con \verb"\rput{ori}(pos){\ps...}" che \`e il comando di posizionamento principale di PSTricks.\\
+L'aggiunta di etichette si ottiene attraverso \verb"\uput{dist}[dir](pos){etichetta}".\\
+Questo via \`e utile per la costruzione di strutture particolari oppure per costruire l'intero schema tracciandone prima tutti i lati e poi sovrapponendo ad alcuni lati i simboli desiderati.
+\`E una tecnica rozza ma molto efficace in alcuni casi.
+
+\item
+\textbf{Posizionamento di un elemento a due terminali dagli estremi dei terminali}\\
+Si ottiene con \verb"\ttput(pos+)(pos-){\ps...}".\\
+L'aggiunta di etichette si ottiene proseguendo con i comandi PSTrics \verb"_{etichetta}" (etichetta sotto) e \verb"^{etichetta}" (etichetta sopra).\\
+Il comando traccia l'elemento a due terminali \verb"\ps..." disponendo l'estremo del suo terminale positivo in \verb"pos+" e quello del negativo in \verb"pos-". Per ora non sono riuscito a trovare un legge per predire la posizione finale dell'etichetta in base ai comandi ``sopra'' e ``sotto''.\\
+La regola (2) \`e la pi\`u diretta ed \`e conveniente nella maggior parte dei problemi comuni.
+
+\item
+\textbf{Posizionamento di un elemento a due terminali attraverso il centro}\\
+Si ottiene con \verb"\ttputc{ori}(posc){\ps...}{hnroot}{length}".\\
+L'aggiunta di etichette si ottiene come nel caso (2).\\
+Il comando \`e simile a \verb"\rput" ma aggiunge al nucleo i teminali in modo che l'elemento disegnato abbia lunghezza complessiva \verb"length".
+Inoltre definisce i nomi dei punti occupati dagli estremi mediante
+\verb"hnroot": \verb"hnroot"p \`e il nome del punto all'estremo positivo e \verb"hnroot"m quello del punto all'estremo negativo.\\
+Questa regola \`e utile per la costruzione dello schema come bigrafo, disponendo prima noccioli e nodi elettrici e dopo gli archi di connessione (vedere Cap.~1 e 2 di ``Fondamenti di circuiti elettronici'', A.~Premoli).
+
+\end{enumerate}
+
+\paragraph{Elementi a pi\`u di due terminali}
+Il loro posizionamento \`e molto pi\`u complesso e non sono riuscito a trovare regole che valessero la complessit\`a richiesta per essere implementate in PSTricks.
+Per questo ho scelto la regola pi\`u facile da implementare che \`e:
+un comando per ogni elemento posiziona l'elemento attraverso il centro e assegna nomi agli estremi dei suoi terminali (analogamente al comando \verb"\ttputc"). 
+Con questa regola gli elementi a pi\`u di due terminali vengono trattati come noccioli e posizionati per primi.
+Dopo il loro posizionamento i nomi dei punti agli estremi dei loro terminali diventano disponibili per posizionere gli altri elementi e per connetterli agli altri elementi.
+%%%%%%%%%%%%%%%%%%%
+
+\section{Esempi}
+
+\paragraph{Posizionamento di elementi a 2 terminali}
+La Figura illustra il posizionamento degli elementi a due terminali nei tre modi possibili.
+L'elemento a sinistra \`e posizionato mediante \verb"\rput", quello al centro mediante \verb"\ttput" e quello a destra con \verb"\ttputc".
+Gli ultimi due elementi sono etichettati e i nomi dei punti agli estremi dell'elemento di destra sono sfruttati per sovrapporre i morsetti.
+
+\begin{verbatim}
+\rput{45}(2,2){\psatt}
+\ttput(5,4)(3,1){\psatt}_{$N_1$}
+\ttputc{145}(6,2){\psatt}{B}{3}^{$g(v)$}
+\psth(Bp)\psth(Bm)
+\end{verbatim}
+
+% simple two-port cases
+\begin{center}
+\begin{pspicture}(0,0)(8,4)\showgrid  
+\psen
+\rput{45}(2,2){\psatt}
+\ttput(5,4)(3,1){\psatt}_{$N_1$}
+\ttputc{145}(6,2){\psatt}{B}{3}^{$g(v)$}
+\psth(Bp)\psth(Bm)
+\end{pspicture}
+\end{center}
+%%%%
+
+\paragraph{Definizione relativa dei punti}
+La Figura illustra il posizionamento relativo dei punti per la costruzione di un ponte di Wheatstone.
+Il punto F \`e definito in modo assoluto mentre tutti gli altri punti notevoli sono definiti rispetto ad F mediante \verb"\pnoder".
+La parte sinistra della rete \`e costruita con spezzata e nucleo sovrapposto.
+
+\begin{verbatim}
+\pnode(7,2.5){F}\nput{0}{F}{F}
+\pnoder(F)(-2,2.5){A}\nput{0}{A}{A}
+\pnoder(F)(-2,-2.5){B}\nput{0}{B}{B}
+\pnoder(F)(-4,0){C}\nput{0}{C}{C}
+\pnoder(F)(-5,0){D}\nput{0}{D}{D}
+%
+\ttput(F)(A){\psatt}\ttput(F)(B){\pstt}
+\ttput(C)(A){\pstt}\ttput(C)(B){\pstt}
+%
+\psline(A)(D|A)(D|B)(B)\rput{90}(D){\pstt}
+\end{verbatim}
+
+% relative nodes
+\begin{center}
+\begin{pspicture}(0,0)(8,5) 
+\psen
+\pnode(7,2.5){F}\nput{0}{F}{F}
+\pnoder(F)(-2,2.5){A}\nput{0}{A}{A}
+\pnoder(F)(-2,-2.5){B}\nput{0}{B}{B}
+\pnoder(F)(-4,0){C}\nput{0}{C}{C}
+\pnoder(F)(-5,0){D}\nput{0}{D}{D}
+%
+\ttput(F)(A){\psatt}\ttput(F)(B){\pstt}
+\ttput(C)(A){\pstt}\ttput(C)(B){\pstt}
+%
+\psline(A)(D|A)(D|B)(B)\rput{90}(D){\pstt}
+\end{pspicture}
+\end{center}
+%%%%
+
+\paragraph{Schemi informali}
+L'uso della descrizione mediante bigrafi si presta alla creazione di schemi inusuali con collegamenti curvilinei.
+La Figura esemplifica l'uso dei comandi \verb"\ttputc" e \verb"\pcarc" per la creazione di un parallelo di due elementi con connessioni curvilinee.
+
+\begin{verbatim}
+\ttputc{0}(3,3){\psatt}{B1}{0}^{$N_1(v)$}
+\ttputc{0}(3,1){\pstt}{B2}{0}
+\pcarc[arcangle=20](B1p)(6,2)\pcarc[arcangle=20](6,2)(B2p)
+\pcarc[arcangle=20](B2m)(0,2)\pcarc[arcangle=20](0,2)(B1m)
+\psn(6,2)\psn(0,2)
+\end{verbatim}
+
+% \ttputc check
+\begin{center}
+\begin{pspicture}(0,0)(6,4)  
+\psen
+\ttputc{0}(3,3){\psatt}{B1}{0}^{$N_1(v)$}
+\ttputc{0}(3,1){\pstt}{B2}{0}
+\pcarc[arcangle=20](B1p)(6,2)\pcarc[arcangle=20](6,2)(B2p)
+\pcarc[arcangle=20](B2m)(0,2)\pcarc[arcangle=20](0,2)(B1m)
+\psn(6,2)\psn(0,2)
+\end{pspicture}
+\end{center}
+%%%%
+
+\paragraph{Posizionamento di elementi con pi\`u di due terminali}
+La Figura illustra l'uso del pomando \verb"\psccoa" per disegnare un amplificatore operazionale disegnato in verso cc (counter-clockwise, cio\`e invertente, non invertente, uscita) con orientamento arbitrario.
+I nomi dei punti estremi dei terminali sono creati con la regola \texttt{hmroot}m, \texttt{hmroot}p, \texttt{hmroot}o, \texttt{hmroot}g e sono associati nell'ordine ai morsetti $-$, $+$, uscita e terra.
+I nomi dei punti estremi sono poi usati per tracciare la connessione di fantasia che compare mediante un comando \verb"\psline".
+
+\begin{verbatim}
+\psccoa{10}(4,2){a1}{4}
+\pnoder(a1m)(-3,-2){P}
+\psline(a1m)(P|a1m)(P)(a1g|P)(a1g)
+\rput(a1g|P){\psgr}
+\end{verbatim}
+
+% oa check
+\begin{center}
+\begin{pspicture}(0,0)(8,4)\showgrid  
+\psen
+\psccoa{10}(4,2){a1}{4}
+\pnoder(a1m)(-3,-2){P}
+\psline(a1m)(P|a1m)(P)(a1g|P)(a1g)
+\rput(a1g|P){\psgr}
+\end{pspicture}
+\end{center}
+%%%%
+
+\paragraph{Esempio finale}
+La Figura illustra un esempio complesso con due elementi con pi\`u di due terminali.
+Per primo viene posizionato l'amplificatore e mediante i nomi dei suoi punti estremi vengono definiti gli altri punti notevoli dello schema.
+Gli elementi rimanenti sono aggiunti usando una miscela delle tecniche descritte.
+
+\begin{verbatim}
+\pnode(7,2){C}
+\psccoa{0}(C){a}{4}
+\pnoder(am)(-3,-1){tpc}\pnoder(am)(5,-.5){oa}
+\pnoder(am)(5,-2){ob}\pnoder(C)(0,1.5){F}
+\pstp{0}(tpc){tp}{2}{2}
+%
+\ttput(am)(tp21){\psatt}_{Z(s)}
+\ttput(tp11)(tp12){\pstt}
+\psline(am)(am|F)(ao|F)(ao)(oa)\rput(F){\pstt}
+%
+\psline(tp22)(ob)\ttput(ap)(ap|ob){\psah}^{$i_+$}
+\psline(ag)(ag|ob)
+\psth(oa)\psth(ob)\rput(ag|ob){\psgr}
+%
+\psvrd(oa)(ob){-30}{$v_u(t)$}
+\end{verbatim}
+
+% final complex example
+\begin{center}
+\begin{pspicture}(0,0)(9,5) 
+\psen
+\pnode(7,2){C}
+\psccoa{0}(C){a}{4}
+\pnoder(am)(-3,-1){tpc}\pnoder(am)(5,-.5){oa}
+\pnoder(am)(5,-2){ob}\pnoder(C)(0,1.5){F}
+\pstp{0}(tpc){tp}{2}{2}
+%
+\ttput(am)(tp21){\psatt}_{Z(s)}
+\ttput(tp11)(tp12){\pstt}
+\psline(am)(am|F)(ao|F)(ao)(oa)\rput(F){\pstt}
+%
+\psline(tp22)(ob)\ttput(ap)(ap|ob){\psah}^{$i_+$}
+\psline(ag)(ag|ob)
+\psth(oa)\psth(ob)\rput(ag|ob){\psgr}
+%
+\psvrd(oa)(ob){-30}{$v_u(t)$}
+\end{pspicture}
+\end{center}
+
+
+\end{document}

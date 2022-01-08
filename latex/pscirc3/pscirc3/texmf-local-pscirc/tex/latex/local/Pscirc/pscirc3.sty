@@ -1,0 +1,84 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% pscirc3.sty   Pstricks based package to draw electric circuits
+%               3rd version stripped of DD's parameters and reference 
+%				 	 directions
+%
+% 17 August 1998
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\ProvidesPackage{pscirc3}
+
+\RequirePackage{pstricks}
+\RequirePackage{pst-node,pst-plot}
+\RequirePackage{calc}
+\RequirePackage{ifthen}
+%%%%%%%
+
+% internal variables ...
+\newlength{\rot}
+\newlength{\tlu}
+\newlength{\tll}
+\newlength{\tfx}
+\newlength{\tfy}
+\newlength{\tlm}
+\newlength{\tlx}
+\newlength{\tly}
+\newlength{\posx}
+\newlength{\posy}
+\newlength{\labeldist}
+
+
+% Print for debbugging
+\def\PRINT#1{\message{--->>>  #1 <<<---}}
+
+% settings ...
+\newcommand{\psen}{%
+\SpecialCoor%
+\psset{shortput=nab,labelsep=.5}}
+
+% auxiliary grid ...
+\newpsobject{showgrid}{psgrid}{subgriddiv=1,griddots=10,gridlabels=6pt}
+%%%%
+
+
+%%%% placement ...
+%
+% two-terminal elements by terminal heads
+% usage: \ttput(coor +)(coor -){bare symbol to place}
+% to add the element label: \ncput{\uput{.6}[d]{0}(0,0){$d$}}
+%	
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+\def\ttput(#1)(#2)#3{%
+\pcline(#2)(#1)%
+\ncput[nrot=:U]{#3}}
+
+% two-terminal elements by center and creation of node at t.h.
+% usage: \ttputc{orie}(center coor.){bare symbol to place}
+%								{root of node names}{overall length}
+% to add the element label: \ncput{\uput{.6}[d]{0}(0,0){$d$}}
+%
+\def\ttputc#1(#2)#3#4#5{%
+% length ...
+\pssetlength{\tlu}{1}%
+\setlength{\tlm}{.7\tlu}%
+\setlength{\tlx}{#5\tlu}\setlength{\tlx}{.5\tlx}%
+\ifthenelse{\lengthtest{\tlx < \tlm}}%
+{\setlength{\tlx}{\tlm}}{}%
+%
+\rput{#1}(#2){%
+\pnode(-\tlx,0){#4m}\pnode(\tlx,0){#4p}}%
+\pcline(#4m)(#4p)%
+\ncput[nrot=:U]{#3}}
+
+% relative specification of nodes
+% usage: \pnoder(ref coor)(coor relative to ref cor){node name}
+\def\pnoder(#1)(#2)#3{%
+\rput(#1){\pnode(#2){#3}}}
+%%%%
+
+%%%% library input ...
+\InputIfFileExists{psclibim.sty}
+
+%%%% end of pscirc3.sty %%%%
+

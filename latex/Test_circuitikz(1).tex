@@ -1,0 +1,111 @@
+% psccat.tex		 pst-circ catalog of symbols
+% Nov 18, 1999
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\documentclass[12pt,a4paper]{article}
+%\usepackage{pst-circ}
+%\usepackage{pscirc3}
+%\usepackage{fancyvrb,fvrb-ex}
+\usepackage{circuitikz,siunitx}
+\usepackage[figure,tworuled,linesnumbered,noline]{algorithm2e}
+\usepackage[italian]{babel}
+\usepackage[latin1]{inputenc}
+\addtolength{\textwidth}{2cm}
+\addtolength{\oddsidemargin}{-1cm}
+\setlength{\parindent}{0pt}
+
+\title{\vspace*{-2cm}
+\texttt{circuitikz}: alcuni esempi}
+\author{G. Antonini}
+\date{December 29, 2021}
+
+%%%%%%%%%%%%%%%
+
+\begin{document}
+\maketitle
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Circuito RC serie}
+%
+\begin{figure}[!ht]
+\begin{center}
+\begin{circuitikz}
+  \draw(0,0)
+  to[V,v=$v_s(t)$](0,2)
+  %to[short](3,2)
+  to[R=$R$](3,2)
+  to[C=$C$](3,0)
+  to[short](0,0);
+\end{circuitikz}
+\caption{\small Circuito RC serie.} \label{fig:RC_serie}
+\end{center}
+\end{figure}
+%
+\section{Circuito RL parallelo}
+%
+\begin{figure}[!ht]
+\begin{center}
+\begin{circuitikz}[american, voltage shift=2]
+  \draw (0,0) to[isource, l=$I_{SC}$] (0,3)
+  to[short, -*, i=$I_0$] (2,3)
+  to[R=$G_{eq}S$, i>_=$i_R$] (2,0) -- (0,0);
+  \draw (2,3) -- (4,3)
+  to[L,l_=$L$, i>_=$i_L$, v^=$v_L$]
+  (4,0) to[short, -*] (2,0);
+\end{circuitikz}
+\caption{\small Circuito RL parallelo.} \label{fig:RL_parallelo}
+\end{center}
+\end{figure}
+%
+
+\section{Circuito RL parallelo capovolto}
+%
+\begin{figure}[!ht]
+\begin{center}
+\begin{circuitikz}[american, voltage shift=1]
+  \draw (0,3) to[isource, l_=$I_{SC}$] (0,0)
+  to[short, -*, ] (2,0)
+  to[R=$G_{eq}S$, i>^=$i_R$] (2,3) -- (0,3);
+  \draw (2,0) -- (4,0)
+  to[L=$L$, i>^=$i_L$, v=$v_L$]
+  (4,3) to[short, -*] (2,3);
+\end{circuitikz}
+\caption{\small Circuito RL parallelo.} \label{fig:RL_parallelo}
+\end{center}
+\end{figure}
+%
+%\clearpage
+%
+\section{Opamp}
+%
+\begin{figure}[!ht]
+\begin{center}
+\begin{circuitikz}[american, voltage shift=1]
+\ctikzset{bipoles/length=1cm}
+\draw
+(0, 0) node[op amp] (opamp) {}
+(opamp.-) -- (-3, 0.35) to [V=$v_1(t)$, invert] (-3,-1) to (-3,-1.1) to[L=$L$, i>^=$i_L$, v=$v_L$] (-3,-2.5) node[ground]{}
+(opamp.down) node[ground] {}
+(opamp.-) to[short,*-] ++(0,0.5) coordinate (leftC)
+to[R=$R_f$] (leftC -| opamp.out)
+to[short,-*] (opamp.out) to [short,-o] (1.5,0) %to (1.5,-0.5) node[ground]{}
+(opamp.+) -- (-0.85,-1.5) to[R=$R_B$] (-0.85,-2.5) -- (-0.85,-3) node[ground]{}
+(-0.85,-1.2) to[R,l_=$R_A$] (0.85,-1.2) to[short,*-] (0.85,0)%(leftC -| opamp.out)
+;
+\end{circuitikz}
+%\begin{circuitikz}[scale=0.8, transform shape]
+% \draw (0,0) node[above]{$v_i$} to[short, o-] ++(1,0)
+% node[op amp, anchor=-](OA){\texttt{OA1}}
+% (OA.+) -- ++(0,-1) coordinate(FB)
+% to[R=$R_1$] ++(0,-2) node[ground]{}
+% (OA.-) -- ++(0,+1) coordinate(FA)
+% (FA) to[R=$R_2$, *-] (FA -| OA.out) -- (OA.out)
+% to [short, *-o] ++(1,0) node[above]{$v_o$}
+% ;
+%\end{circuitikz}
+\caption{\small Bistabile.} \label{fig:bistabile}
+\end{center}
+\end{figure}
+
+\end{document}

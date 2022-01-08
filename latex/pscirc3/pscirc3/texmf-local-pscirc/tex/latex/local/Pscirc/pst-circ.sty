@@ -1,0 +1,524 @@
+%%
+%% Package `pst-circ.ins'
+%%
+%% Ivan Maio (Polytechnic of Turin - Italy) <maio@polito.it>
+%% Amedeo Premoli (Polytechnic of Milan - Italy)
+%% August 2, 1999
+%%
+
+\ProvidesPackage{pst-circ}
+\RequirePackage{pstricks}
+\RequirePackage{pst-node}
+\RequirePackage{calc}
+\RequirePackage{ifthen}
+%%%%%%%
+
+% auxiliary variables ...
+\newlength{\rot}
+\newlength{\tlu}
+\newlength{\tll}
+\newlength{\tfx}
+\newlength{\tfy}
+\newlength{\tlm}
+\newlength{\tlx}
+\newlength{\tly}
+\newlength{\posx}
+\newlength{\posy}
+\newlength{\labeldist}
+\newlength{\pslw}
+\setlength{\pslw}{\pslinewidth}
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% \section{Environment settings}
+%
+% Graphic commands are designed for 12pt article documents
+% and they should be used in files starting with
+%
+% \begin{verbatim}
+% \documentclass[12pt,a4paper]{article}
+% \usepackage{pscirc3}
+% ...
+% \end{verbatim}
+%
+% A drawing should be embedded in a \texttt{pspicture} environment
+% like the following
+%
+% \begin{verbatim}
+% \psset{unit= ... lengthunit}
+% \begin{pspicture}(x size, y size)
+% \psen\showgrid
+% ...
+% ... circuit description ...
+% ...
+% \end{pspicture}
+% \end{verbatim}
+%
+% \verb"\psset{unit ...}" is useful to change the size of the drawing
+% or to prevent magnification in \texttt{seminar} slides
+% (\eg \texttt{unit=1\semcm}).
+% \verb"\showgrid" provides a reference grid over the \texttt{pspicture}
+% area useful for editing.
+%
+%    \begin{macrocode}
+\newpsobject{sgrid}{psgrid}{subgriddiv=1,griddots=10,gridlabels=6pt}
+%    \end{macrocode}
+%
+% \verb"\psen" sets special coordinates and defaults values of some
+% parameters -> comment on special coordinates
+%%\def\psen{\SpecialCoor\psset{arrowsize=.25,labelsep=2.5em}}
+%
+%    \begin{macrocode}
+\def\psen{\SpecialCoor\psset{%
+linewidth=0.04,gridwidth=0.04,arrowsize=0.08 3,labelsep=2.5em}}
+%    \end{macrocode}
+
+
+%%%% basic symbols ...
+
+% arrow head ...
+\def\psah{\psline{<-}(-.1,0)(.1,0)}
+
+% plus and minus symbols ...
+\newcommand{\plu}{%
+\psline(0,-.15)(0,.15)%
+\psline(-.15,0)(+.15,0)}
+\newcommand{\mnu}{\psline(-.15,0)(.15,0)}
+
+% electric node ...
+\def\psn(#1){\psdot[dotsize=4\pslinewidth](#1)}
+
+% terminal head  ...
+\def\psth(#1){\pscircle[fillstyle=solid](#1){3\pslinewidth}}
+
+% ground ...
+\def\psgr(#1){%
+\rput(#1){%
+\psline(0,0)(0,-0.5)%
+\psline[linewidth=1.2\pslw](-.36,-0.5)(.36,-0.5)%
+\psline[linewidth=1.2\pslw](-.225,-.605)(.225,-.605)%
+\psline[linewidth=1.2\pslw](-.1,-.7)(.1,-.7)}}
+
+% connections ...
+% labelling ...
+
+%%%% placement ...
+%
+% two-terminal elements by terminal heads
+% usage: \ttput(coor +)(coor -){bare symbol to place}
+% to add the element label: \ncput{\uput{.6}[d]{0}(0,0){$d$}}
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+\def\ttput(#1)(#2)#3{%
+\pcline(#2)(#1)%
+\ncput[nrot=:U]{#3}}
+
+% two-terminal elements by terminal heads with curved terminals
+% usage: \ttputa(coor +)(coor -){bare symbol to place}{curvature}
+% to add the element label: \ncput{\uput{.6}[d]{0}(0,0){$d$}}
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+\def\ttputa(#1)(#2)#3#4{%
+\pcarc[arcangle=#4]{-}(#2)(#1)%
+\ncput[nrot=:U]{#3}}
+
+% two-terminal elements by center and creation of node at t.h.
+% usage: \ttputc{orie}(center coor.){bare symbol to place}
+%								{root of node names}{overall length}
+% to add the element label: \ncput{\uput{.6}[d]{0}(0,0){$d$}}
+%
+\def\ttputc#1(#2)#3#4#5{%
+% length ...
+\pssetlength{\tlu}{1}%
+\setlength{\tlm}{.7\tlu}%
+\setlength{\tlx}{#5\tlu}\setlength{\tlx}{.5\tlx}%
+\ifthenelse{\lengthtest{\tlx < \tlm}}%
+{\setlength{\tlx}{\tlm}}{}%
+%
+\rput{#1}(#2){%
+\pnode(-\tlx,0){#4m}\pnode(\tlx,0){#4p}}%
+\pcline(#4m)(#4p)%
+\ncput[nrot=:U]{#3}}
+
+% relative specification of nodes
+% usage: \pnoder(ref coor)(coor relative to ref cor){node name}
+\def\pnoder(#1)(#2)#3{%
+\rput(#1){\pnode(#2){#3}}}
+%%%%
+
+% reference directions
+% \pssa{position}{way (0=loads, 180=sources)}
+%						{label distance}{labelpos}{label}
+\def\pssa#1#2#3#4#5{%
+\ncput[nrot=:U]{%
+\rput{#2}(#1,0){\psah}%
+\rput{*0}(#1,0){\uput{#3}[#4](0,0){#5}}}}
+
+% \psfa(term +)(term -){curvature}{labdis}{labpos}{vlabel}
+\def\psfa(#1)(#2)#3#4#5#6{%
+\pcarc[arrowsize=4\pslinewidth,nodesep=0.5,arcangle=#3]{->}(#2)(#1)%
+\ncput{\uput{#4}[#5](0,0){#6}}}
+%%%%
+
+%%%% two-terminal bare solid symbols ...
+
+% generic two-terminal ...
+\def\pstt{%
+\psframe[fillstyle=solid,fillcolor=white](-.6,-.2)(.6,.2)}
+
+% asymmetric two-terminal ...
+\def\psatt{%
+\psframe[fillstyle=solid,fillcolor=white](-.6,-.2)(.6,.2)%
+\psline[linewidth=.1](.55,.2)(.55,-.2)}
+
+% voltage source ...
+\def\psv{%
+\pscircle[fillstyle=solid,fillcolor=white](0,0){.45}%
+\rput{90}(-.25,0){\mnu}%
+\rput{90}(.2,0){\plu}}
+
+% voltage meter ...
+\newcommand{\psvm}{%
+\psellipse[fillstyle=solid,fillcolor=white](0,0)(.7,.3)%
+\rput{-90}(-.2,0){\textsf{V}}%
+\rput{90}(.3,0){\psset{unit=.8}\plu}}
+
+% current meter ...
+\newcommand{\psjm}{%
+\psline[arrowsize=.08 2,arrowinset=0]{<-}(-.5,0)(.2,0)%
+\psellipse[fillstyle=solid,fillcolor=white](0,0)(.3,.7)%
+\rput{90}(0,0){\textsf{A}}%
+}
+
+% current source ...
+\def\psj{%
+\pscircle[fillstyle=solid,fillcolor=white](0,0){.45}%
+\psline{<-}(-.3,0)(.3,0)}
+
+% linear resistor ...
+\def\psr{%
+\psset{xunit=.8,yunit=.75}%
+\psline[linewidth=.5,linecolor=white](-.7,0)(.7,0)%
+\psline(-.7,0)(-.6,0)(-.5,.25)(-.3,-.25)(-.1,.25)(.1,-.25)(.3,.25)%
+(.5,-.25)(.6,0)(.7,0)}
+
+% nonlinear resistor ...
+\def\psnr{%
+\psset{xunit=.8,yunit=.75}%
+\psframe[fillstyle=solid,fillcolor=white,linewidth=.015]%
+(-.75,-.4)(.75,.4)%
+\psline[linewidth=.1](.7,-.4)(.7,.4)%
+\rput(-.05,0){%
+\psline(-.7,0)(-.6,0)(-.5,.25)(-.3,-.25)(-.1,.25)(.1,-.25)(.3,.25)%
+(.5,-.25)(.6,0)(.7,0)}}
+
+% linear inductor ...
+\def\psl{%
+\psline[linewidth=.5,linecolor=white](-.6,0)(.6,0)%
+\psline(-.6,0)(-.475,0)%
+\pscurve%
+(-.475,0)(-.375,.25)(-.175,0)(-.25,-.25)(-.325,0)(-.125,.25)(.075,0)%
+(0,-.25)%
+(-.075,0)(.125,.25)(.325,0)(.25,-.25)(.175,0)(.375,.25)(.475,0)%
+\psline(.475,0)(.6,0)}
+
+% linear capacitor ...
+\def\psc{%
+\psline[doubleline=true,linewidth=1.8\pslinewidth](0,.4)(0,-.4)}
+%\psline[doubleline=true,linewidth=2.5\pslw](0,.4)(0,-.4)}
+
+% logic inverter ...
+\def\psinv{%
+\pspolygon[fillstyle=solid,fillcolor=white](.5,0)(-.5,.5)(-.5,-.5)%
+\pscircle[fillstyle=solid,fillcolor=white](.6,0){.1}}%
+% transmission line symbol ...
+
+% transmission line ...
+\def\pstl#1{%
+% line length
+\pssetlength{\tlu}{1}%
+\setlength{\tll}{#1\tlu}%
+\setlength{\tll}{.5\tll}%
+\psframe[fillstyle=solid,fillcolor=lightgray](-\tll,-.1)(\tll,.1)}
+
+% open circuit ...
+\def\psoc{%
+\psframe[linecolor=white,fillstyle=solid,fillcolor=white]%
+(-0.4,-0.2)(0.4,0.2)%
+\psn(-.4,0)\psn(.4,0)}
+% short circuit ...
+\newcommand{\pssc}{%
+\psframe[linecolor=white,fillstyle=solid,fillcolor=white]%
+(-0.4,-0.2)(0.4,0.2)%
+\psn(-.4,0)\psn(.4,0)%
+\psline[linewidth=.08](-.35,0)(.35,0)}
+
+% open switch ...
+\def\psos{%
+\psframe[linecolor=white,fillstyle=solid,fillcolor=white]%
+(-0.5,-0.2)(0.5,0.2)%
+\psline[linewidth=.08](-0.6,0)(-.4,0)(.5,.4)%
+\psline[linewidth=.08](.4,0)(0.6,0)%
+\psarcn[arrowsize=.15]{->}(-.4,0){.6}{55}{-30}%
+}
+
+% close switch ...
+\def\pscs{%
+\psframe[linecolor=white,fillstyle=solid,fillcolor=white]%
+(-0.5,-0.2)(0.5,0.2)%
+\psline[linewidth=.08](-0.6,0)(-.4,0)(.58,.1)%
+\psline[linewidth=.08](.4,0)(0.6,0)%
+\psarcn[arrowsize=.15]{<-}(-.4,0){.6}{55}{-30}%
+}
+
+% open/close switch ...
+\def\pssw{%
+\psframe[linecolor=white,fillstyle=solid,fillcolor=white]%
+(-0.5,-0.2)(0.5,0.2)%
+\psline[linewidth=.08](-0.6,0)(-.4,0)(.55,.25)%
+\psline[linewidth=.08](.4,0)(0.6,0)%
+\psarcn[arrowsize=.15]{<->}(-.4,0){.6}{55}{-30}%
+}
+
+% controlled voltage source ...
+\def\pscv{%
+\rput{45}(0,0){%
+\psframe[fillstyle=solid,fillcolor=white](-.4,-.4)(.4,.4)}%
+\rput{90}(-.25,0){\mnu}%
+\rput{90}(.2,0){\plu}}
+
+% controlled current source ...
+\def\pscj{%
+\rput{45}(0,0){%
+\psframe[fillstyle=solid,fillcolor=white](-.4,-.4)(.4,.4)}%
+\psline{<-}(-.3,0)(.3,0)}
+
+
+% ideal diode ...
+\def\psid{%
+\psset{unit=.7}%
+\psline[linewidth=.8,linecolor=white](-.3,0)(.3,0)%
+\pspolygon[fillstyle=solid,fillcolor=black](-.2,0)(+.3,.4)(+.3,-.4)%
+\psline[linewidth=.1](-.25,-.4)(-.25,.4)}
+
+% junction diode ...
+\def\psd{%
+\pscircle[linewidth=.015](0,0){.42}%
+\psid}
+
+% battery core ...
+\def\psb{%
+\rput(-.15,0){%
+\psline[linewidth=2.2\pslinewidth,linecolor=white](0,-.2)(0,.2)%
+\psline[linewidth=1.45\pslinewidth](-.07,-.1)(-.07,.1)%
+\psline[linewidth=1.45\pslinewidth](.07,-.4)(.07,.4)}%
+\rput(.15,0){%
+\psline[linewidth=2.2\pslinewidth,linecolor=white](0,-.2)(0,.2)%
+\psline[linewidth=1.45\pslinewidth](-.07,-.1)(-.07,.1)%
+\psline[linewidth=1.45\pslinewidth](.07,-.4)(.07,.4)}}
+
+% nullator and norator ...
+\def\psnul{%
+\pscircle[fillstyle=solid,fillcolor=white](0,0){.42}\psn(0,0)}
+%
+\def\psnor{%
+\pscircle[fillstyle=solid,fillcolor=white](0,0){.42}%
+\psn(0,0)%
+\pscircle(0,0){.18}%
+\pscircle(0,0){.30}%
+}
+%\pscircle[fillstyle=solid,fillcolor=lightgray](0,0){.42}}
+%\pscircle[fillstyle=crosshatch*, fillcolor=black, hatchcolor=white,%
+%hatchangle=0, hatchsep=.07, hatchwidth=.04](0,0){.42}}
+%%%%
+
+% element to disconnect parts ...
+\def\psdis{%
+\psframe[linecolor=white,fillstyle=solid,fillcolor=white]%
+(-0.4,-0.2)(0.4,0.2)%
+\psth(-.4,0)\psth(.4,0)}
+
+%%%% multiterminal elements with hibrid structure
+%
+% NMOS and PMOS transistors ...
+% usage: \ttput()(){\psnmos{root_of_gate_name}}(assigned: [root_of...]g)
+\def\psnmos#1{%
+\psframe[linecolor=white,fillstyle=solid,fillcolor=white]%
+(-0.45,-0.1)(0.45,0.1)%
+\psline(-.45,0)(-.45,.35)(.45,.35)(.45,0)%
+\psline[linewidth=1.4\pslinewidth](-.55,.35)(.55,.35)%
+\psline[linewidth=1.4\pslinewidth](-.45,.5)(.45,.5)%
+\psline(0,.5)(0,1)%
+\pnode(0,1){#1g}}
+%
+\newcommand{\pspmos}[1]{%
+\psframe[linecolor=white,fillstyle=solid,fillcolor=white]%
+(-0.45,-0.1)(0.45,0.1)%
+\psline(-.45,0)(-.45,.35)(.45,.35)(.45,0)%
+\psline[linewidth=1.4\pslinewidth](-.55,.35)(.55,.35)%
+\psline[linewidth=1.4\pslinewidth](-.45,.5)(.45,.5)%
+\psline(0,.5)(0,1)%
+\psth(0,.6)%
+\pnode(0,1){#1g}}
+
+%%%% multiterminal elements ...
+%
+% counter clockwise operational amplilfier ...
+% usage: \psccoa{orientation}(center){root of node names}{overall length}
+\def\psccoa#1(#2)#3#4{%
+% length ...
+\pssetlength{\tlu}{1}%
+\setlength{\tlm}{1\tlu}%
+\setlength{\tlx}{#4\tlu}\setlength{\tlx}{.5\tlx}%
+\ifthenelse{\lengthtest{\tlx < \tlm}}%
+{\setlength{\tlx}{\tlm}}{}%
+%
+\rput{#1}(#2){%
+\pnode(-\tlx,.5){#3m}\pnode(-\tlx,-.5){#3p}%
+\pnode(\tlx,0){#3o}\pnode(0,-1){#3g}%
+\psline(#3m)(0,.5)\psline(#3p)(0,-.5)\psline(0,0)(#3o)\psline(0,0)(#3g)%
+\pspolygon[fillstyle=solid,fillcolor=white](1,0)(-1,1)(-1,-1)%
+\rput(-.7,-.5){\plu}%
+\rput(-.7,.5){\mnu}}}
+%
+% clockwise operational amplilfier ...
+% usage: \pscwoa{orientation}(center){root of node names}{overall length}
+\def\pscwoa#1(#2)#3#4{%
+% length ...
+\pssetlength{\tlu}{1}%
+\setlength{\tlm}{1\tlu}%
+\setlength{\tlx}{#4\tlu}\setlength{\tlx}{.5\tlx}%
+\ifthenelse{\lengthtest{\tlx < \tlm}}%
+{\setlength{\tlx}{\tlm}}{}%
+%
+\rput{#1}(#2){%
+\pnode(-\tlx,.5){#3p}\pnode(-\tlx,-.5){#3m}%
+\pnode(\tlx,0){#3o}\pnode(0,-1){#3g}%
+\psline(#3m)(0,-.5)\psline(#3p)(0,.5)\psline(0,0)(#3o)\psline(0,0)(#3g)%
+\pspolygon[fillstyle=solid,fillcolor=white](1,0)(-1,1)(-1,-1)%
+\rput(-.7,-.5){\mnu}%
+\rput(-.7,.5){\plu}}}
+
+% generic two-port element ...
+% usage: \pstp{orientation}(center){root of node names}{overall length}{port width}
+\def\pstp#1(#2)#3#4#5{%
+%
+% lengths ...
+\pssetlength{\tlu}{1}%
+\setlength{\tlx}{#4\tlu}\setlength{\tlx}{.5\tlx}\setlength{\tfx}{.55\tlx}%
+\setlength{\tly}{#5\tlu}\setlength{\tly}{.5\tly}\setlength{\tfy}{1.4\tly}%
+%
+\rput{#1}(#2){%
+\pnode(-\tlx,\tly){#311}\pnode(-\tlx,-\tly){#312}%
+\pnode(\tlx,\tly){#321}\pnode(\tlx,-\tly){#322}
+%
+\psline(#311)(#321)\psline(#312)(#322)%
+\psframe[fillstyle=solid,fillcolor=white](-\tfx,-\tfy)(\tfx,\tfy)}}%
+
+% nullor ...
+% usage: \psnn{orientation}(center){root of node names}{overall length}{port width}
+\def\psnn#1(#2)#3#4#5{%
+%
+% lengths ...
+\pssetlength{\tlu}{1}%
+\setlength{\tlx}{#4\tlu}\setlength{\tlx}{.5\tlx}\setlength{\tfx}{.55\tlx}%
+\setlength{\tly}{#5\tlu}\setlength{\tly}{.5\tly}\setlength{\tfy}{1.4\tly}%
+%
+\rput{#1}(#2){%
+\pnode(-\tlx,\tly){#311}\pnode(-\tlx,-\tly){#312}%
+\pnode(\tlx,\tly){#321}\pnode(\tlx,-\tly){#322}
+%
+\psline(#311)(#321)\psline(#312)(#322)%
+\pspolygon[fillstyle=solid,fillcolor=white]%
+(-\tfx,-\tfy)(-\tfx,\tfy)(.4\tfx,\tfy)(1.4\tfx,0)(.4\tfx,-\tfy)}}%
+
+% three terminal element ...
+% usage: \pstt{orientation}(center){root of node names}{overall length}{overall height}
+\def\psttt#1(#2)#3#4#5{%
+%
+% lengths ...
+\pssetlength{\tlu}{1}%
+\setlength{\tlx}{#4\tlu}\setlength{\tlx}{.5\tlx}\setlength{\tfx}{.55\tlx}%
+\setlength{\tly}{#5\tlu}\setlength{\tly}{.5\tly}\setlength{\tfy}{\tly}%
+%
+\rput{#1}(#2){%
+\pnode(-\tlx,\tly){#31}\pnode(\tlx,\tly){#32}%
+\pnode(0,-\tly){#3g}
+%
+\psline(#31)(#32)\psline(0,0)(#3g)%
+\psframe[fillstyle=solid,fillcolor=white](-\tfx,-.5\tfy)(\tfx,1.5\tfy)}}%
+
+% three terminal nullor ...
+% usage: \psnn3{orientation}(center){root of node names}{overall length}{overall height}
+\def\psnnt#1(#2)#3#4#5{%
+%
+% lengths ...
+\pssetlength{\tlu}{1}%
+\setlength{\tlx}{#4\tlu}\setlength{\tlx}{.5\tlx}\setlength{\tfx}{.55\tlx}%
+\setlength{\tly}{#5\tlu}\setlength{\tly}{.5\tly}\setlength{\tfy}{\tly}%
+%
+\rput{#1}(#2){%
+\pnode(-\tlx,\tly){#31}\pnode(\tlx,\tly){#32}%
+\pnode(0,-\tly){#3g}%
+%
+\psline(#31)(#32)\psline(0,0)(#3g)%
+%\psframe[fillstyle=solid,fillcolor=white](-\tfx,-.5\tfy)(\tfx,1.5\tfy)
+\pspolygon[fillstyle=solid,fillcolor=white]%
+(-\tfx,-.5\tfy)(-\tfx,1.5\tfy)(.4\tfx,1.5\tfy)(1.1\tfx,.5\tfy)%
+(.4\tfx,-.5\tfy)}}
+
+
+% ideal transformer ...
+% usage: \psid{orientation}(center){root of node names}{port width}
+\def\psit#1(#2)#3#4{%
+%
+% lengths ...
+\pssetlength{\tlu}{1}%
+\setlength{\tly}{#4\tlu}\setlength{\tly}{.5\tly}%
+%
+\rput{#1}(#2){%
+\pnode(-.25,\tly){#311}\pnode(-.25,-\tly){#312}%
+\pnode(.25,\tly){#321}\pnode(.25,-\tly){#322}
+%
+\psline(#311)(#312)\psline(#321)(#322)%
+\psline[linecolor=white,linewidth=.7](0,.5)(0,-.5)%
+\psarc(-.25,0){.5}{-90}{90}\psarc(.25,0){.5}{90}{-90}%
+%\psn(-.4,.8\tly)\psn(.4,.8\tly)%
+}}
+
+% ideal gyrator ...
+% usage: \psig{orientation}(center){root of node names}{port width}
+\def\psig#1(#2)#3#4{%
+%
+% lengths ...
+\pssetlength{\tlu}{1}%
+\setlength{\tly}{#4\tlu}\setlength{\tly}{.5\tly}%
+%
+\rput{#1}(#2){%
+\pnode(-.5,\tly){#311}\pnode(-.5,-\tly){#312}%
+\pnode(.5,\tly){#321}\pnode(.5,-\tly){#322}
+%
+\psline(#311)(#312)\psline(#321)(#322)%
+\psarc(-.5,0){.5}{-90}{90}\psarc(.5,0){.5}{90}{-90}%
+%\psn(-.65,.8\tly)\psn(.65,.8\tly)%
+}}
+
+% coupled inductors ...
+% usage: \psll{orientation}(center){root of node names}{port width}
+\def\psll#1(#2)#3#4{%
+%
+% lengths ...
+\pssetlength{\tlu}{1}%
+\setlength{\tly}{#4\tlu}\setlength{\tly}{.5\tly}%
+%
+\rput{#1}(#2){%
+\pnode(-.3,\tly){#311}\pnode(-.3,-\tly){#312}%
+\pnode(.3,\tly){#321}\pnode(.3,-\tly){#322}
+%
+\psline(#311)(#312)\psline(#321)(#322)%
+\rput{-90}(-.3,0){\psl}\rput{90}(.3,0){\psl}%
+%\psn(-.45,.9\tly)\psn(.45,.9\tly)%
+}}
+
+%%%% end of psclibim.sty %%%%
