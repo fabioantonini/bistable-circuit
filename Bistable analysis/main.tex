@@ -1,6 +1,6 @@
 %++++++++++++++++++++++++++++++++++++++++
 % Don't modify this section unless you know what you're doing!
-\documentclass[letterpaper,11pt]{article}
+\documentclass[12pt,a4paper,tweside,onehalfspacing]{article}
 \usepackage{natbib}
 \bibliographystyle{unsrtnat}
 \usepackage{tabularx} % extra features for tabular environment
@@ -9,6 +9,14 @@
 \usepackage[margin=1in,letterpaper]{geometry} % decreases margins
 %\usepackage{cite} % takes care of citations
 \usepackage[final]{hyperref} % adds hyper links inside the generated pdf file
+% Tabella usata nel frontespizio
+\usepackage{tabularx}
+% Per unire le celle delle tabelle
+\usepackage{multirow}
+% Per l'interlinea
+\usepackage{setspace}
+% Per rendere l'indice cliccabile
+\usepackage{hyperref} 	
 \hypersetup{
 	colorlinks=true,       % false: boxed links; true: colored links
 	linkcolor=blue,        % color of internal links
@@ -16,24 +24,20 @@
 	filecolor=magenta,     % color of file links
 	urlcolor=blue
 }
+\usepackage{bm}
 \usepackage{circuitikz,siunitx}
 
 %+++++++++++++++++++++++++++++++++++++++
 \begin{document}
 
-\title{Politecnico di Torino\\Circuit Theory\\\textbf{Switching behaviour of a Bistable circuit}}
-\author{Mattia Antonini.}
-\date{January 1, 2022}
-\maketitle
-
-\begin{abstract}
-Switching behaviour analysis of a Bistable circuit, circuit model, simulation by LTSpice.
-\end{abstract}
+\input{"Frontespizio/Frontespizio.tex"}
+\newpage
 
 \section{Introduction}
 
 A \textbf{Bistable circuit} is an electronic circuit, usually an integrated circuit, whose output has two stable states to which it is directed by the input signal or signals. It is more usually known as a flip-flop. Binary states denote logic '1' and '0'.
-A Bistable circuit is implemented as in the following Fig. $\ref{bistable-circuit}$ and it is based on an negative-resistance converter.
+A Bistable circuit is implemented as in  Fig. $\ref{bistable-circuit}$ and it is based on a negative-resistance converter.
+%
 \begin{figure}[!ht]
 \begin{center}
 \begin{circuitikz}[american, voltage shift=1]
@@ -48,7 +52,7 @@ to[short,-*] (opamp.out) to [short,-o] (1.5,0) node[above]{$v_o$} %to (1.5,-0.5)
 (-0.85,-1.2) to[R,l_=$R_1$] (0.85,-1.2) to[short,*-] (0.85,0)%(leftC -| opamp.out)
 ;
 \end{circuitikz}
-\caption{\small Bistable circuit based on OpAmp} \label{bistable-circuit}
+\caption{\small Bistable circuit based on OpAmp.} \label{bistable-circuit}
 \end{center}
 \end{figure}
 %
@@ -74,7 +78,7 @@ to[R=$R_f$,*-] (NFB -| OA.-)
 to[short,-*] (OA.-)
 ;
 \end{circuitikz}
-\caption{\label{Negative-resistance converter}Negative-resistance converter}
+\caption{\label{Negative-resistance converter}Negative-resistance converter.}
 \end{center}
 \end{figure}
 We will replace the OpAmp of Fig. $\ref{Negative-resistance converter}$  by three circuit models for each of the regions where the Bistable circuit can work: the Linear region, the +Saturation region, the -Saturation region and for each of them the transient will be analyzed in depth.
@@ -104,10 +108,11 @@ to[short, o-] ++(1,0) to[R=$R_1$, *-] (FB -| OUTPUT) -- (OUTPUT)
 (FB) to [R=$R_i$, *-] (INPUTN)
 ;
 \end{circuitikz}
-\caption{\label{linear-region}Negative-resistance converter: linear region}
+\caption{\label{linear-region}Negative-resistance converter: linear region.}
 \end{center}
 \end{figure}
-By inspection of the equivalent circuit in Fig. \ref{linear-region} we note that $R_1$ and $R_2$ constitute a voltage divider so that
+
+\noindent By inspection of the equivalent circuit in Fig. \ref{linear-region} we note that $R_1$ and $R_2$ constitute a voltage divider so that
 \begin{equation}\label{voltage_divider}
 v_2=\frac{R_2}{R_1+R_2}v_0=\beta v_0
 \end{equation}
@@ -126,7 +131,7 @@ Applying KVL we obtain
 \begin{equation}\label{linear_kvl}
     v=R_f i + v_o
 \end{equation}
-Substituting Equation (\ref{linear_kvl}) into Equation(\ref{voltage_divider_2}), we obtain
+Substituting Equation (\ref{linear_kvl}) into Equation (\ref{voltage_divider_2}), we obtain
 \begin{equation}\label{linear-iv-characteristic}
     i=-\left(\frac{R_1}{R_2}\right)\left(\frac{1}{R_f}\right)v
 \end{equation}
@@ -140,7 +145,7 @@ Hence we get
     -\beta E_{sat} \leq v \leq \beta E_{sat}
 \end{equation}
 %
-Equation(\ref{linear_region_validity}) determines the range of validity for the input voltage $v$ in the Linear region.
+Equation (\ref{linear_region_validity}) determines the range of validity for the input voltage $v$ in the Linear region.
 
 \noindent It is important to remark that in this region the slope of the $i-v$ line is negative with value $-\frac{R_1}{R_2 R_f}$. Thus, we can claim that the resistance of the equivalent Norton circuit is
 \begin{equation}
@@ -155,7 +160,7 @@ The Bistable circuit in the Linear region can be modeled by the Norton equivalen
   to[L,l_=$L$, i>_=$i_L$, v^=$v_L$]
   (2,0) to[short, -*] (0,0);
 \end{circuitikz}
-\caption{\small Norton equivalent circuit for the OpAmp in the 'Linear' region} \label{linear-norton-equivalent}
+\caption{\small Norton equivalent circuit for the OpAmp in the 'Linear' region.} \label{linear-norton-equivalent}
 \end{center}
 \end{figure}
 \subsection{+ Saturation region}
@@ -181,10 +186,11 @@ to[short, o-] ++(1,0) to[R=$R_1$, *-] (FB -| OUTPUT) -- (OUTPUT)
 (1,-2) to [open, v^>=$v_2$] (1,-5)
 ;
 \end{circuitikz}
-\caption{\label{opamp-plus-saturation}Bistable circuit: + Saturation region}
+\caption{\label{opamp-plus-saturation}Bistable circuit: + Saturation region.}
 \end{center}
 \end{figure}
-By inspection of the equivalent circuit in  Fig. \ref{opamp-plus-saturation} and following the same procedure as above, we obtain
+
+\noindent By inspection of the equivalent circuit in  Fig. \ref{opamp-plus-saturation} and following the same procedure as above, we obtain
 %
 \begin{equation}
     v=R_f i+E_{sat}
@@ -224,11 +230,11 @@ The Norton equivalent circuit for the '+ Saturation' region is shown here below 
   to[L,l_=$L$, i>_=$i_L$, v^=$v_L$]
   (4,0) to[short, -*] (2,0);
 \end{circuitikz}
-\caption{\small Norton equivalent circuit for the OpAmp in the '+ Saturation' region} \label{plus-saturation-norton-equivalent}
+\caption{\small Norton equivalent circuit for the OpAmp in the '+ Saturation' region.} \label{plus-saturation-norton-equivalent}
 \end{center}
 \end{figure}
 \subsection{- Saturation region}
-The OpAmp working in the '- Saturation' region can be modeled as in the following picture Fig. $\ref{opamp-minus-saturation}$.\\
+The OpAmp working in the '- Saturation' region can be modeled as in Fig. $\ref{opamp-minus-saturation}$.
 %
 \begin{figure}[!ht]
 \begin{center}
@@ -237,7 +243,7 @@ The OpAmp working in the '- Saturation' region can be modeled as in the followin
 \draw (0,0) node[above]{v} to[short, o-] ++(2,0) coordinate (INPUTN)
 (INPUTN) to[short,*-] ++(0,1.5) coordinate(FB)
 (FB) to[R=$R_f$,*-] ++(2,0) to[short, o-] ++(0,-1)
-(4,0.5) to[battery=$E_{sat}$, invert] ++(0,-3) to[short, o-] ++(0,-1) node[ground]{$gnd$}
+(4,0.5) to[battery, v<=$E_{sat}$, invert] ++(0,-3) to[short, o-] ++(0,-1) node[ground]{$gnd$}
 (4,0.5) to[short, o-] ++(2,0) coordinate (OUTPUT)
 to[short, o-] ++(1,0) node[above]{$v_o$}
 (0,-5) to[short, o-] ++(2,0) coordinate (INPUTP)
@@ -251,12 +257,12 @@ to[short, o-] ++(1,0) to[R=$R_1$, *-] (FB -| OUTPUT) -- (OUTPUT)
 (1,-2) to [open, v^>=$v_2$] (1,-5)
 ;
 \end{circuitikz}
-\caption{\label{opamp-minus-saturation}Bistable circuit: - Saturation region}
+\caption{\label{opamp-minus-saturation}Bistable circuit: - Saturation region.}
 \end{center}
 \end{figure}
 %
 
-\noindent By inspection of this circuit in Fig. \ref{opamp-minus-saturation} and following the same procedure as above we obtain
+\noindent By inspection of the circuit in Fig. \ref{opamp-minus-saturation} and following the same procedure as above we obtain
 \begin{equation}
     v=R_f i-E_{sat}
 \end{equation}
@@ -285,7 +291,7 @@ The Norton equivalent circuit is shown here below in Fig. $\ref{minus-saturation
   to[L,l_=$L$, i>_=$i_L$, v^=$v_L$]
   (4,0) to[short, -*] (2,0);
 \end{circuitikz}
-\caption{\small Norton equivalent circuit for the OpAmp in the '- Saturation' region} \label{minus-saturation-norton-equivalent}
+\caption{\small Norton equivalent circuit for the OpAmp in the '- Saturation' region.} \label{minus-saturation-norton-equivalent}
 \end{center}
 \end{figure}
 %
@@ -347,7 +353,7 @@ Let us at $t=t_1$ apply a square pulse of width $T=t_2-t_1$ and amplitude $E$ (s
         \caption{\label{positive-pulse} Triggering positive pulse.
         }
 \end{figure}
-During the  time interval $t_1 \leq t \leq t_2$, $v_s(t)$ can be replaced by a battery $E$ so that the inductor sees a translated driving-point characteristic as show in the following figure in broken line segments.
+During the  time interval $t_1 \leq t \leq t_2$, $v_s(t)$ can be replaced by a battery $E$ so that the inductor sees a translated driving-point characteristic as shown in Fig. \ref{set-signal-translated-driving-point} (see dashed line).
 %
 \begin{figure}[!ht]
         \centering \includegraphics[width=0.9\columnwidth]{driving-point-characteristic-shifted.jpg}
@@ -371,10 +377,10 @@ The circuit can be modeled taking its Norton equivalent circuit as shown in Fig.
   to[L,l_=$L$, i>_=$i_L$, v^=$v_L$]
   (4,0) to[short, -*] (2,0);
 \end{circuitikz}
-\caption{\small Norton equivalent circuit for the OpAmp in the shifted '- Saturation' region} \label{minus-saturation-norton-equivalent-shifted}
+\caption{\small Norton equivalent circuit for the OpAmp in the shifted '- Saturation' region.} \label{minus-saturation-norton-equivalent-shifted}
 \end{center}
 \end{figure}
-From $P_0$ the current $i$ must subsequently decrease so long as $v \geq 0$ towards $P_1$ with slope $\frac{1}{R_f}$. In that region the Bistable circuit is in the '- Saturation' region as indicated in Fig. $\ref{set-signal-translated-driving-point}$ and so it will modeled as a $RL$ circuit described in Fig. $\ref{minus-saturation-norton-equivalent}$ and ruled by the equations (\ref{minus-saturation-characteristic}). Hence, the input current $i(t)$ to the Bistable circuit will evolve as an decreasing exponential with time constant $\tau=\frac{L}{R}$.
+From $P_0$ the current $i$ must subsequently decrease so long as $v \geq 0$ towards $P_1$ with slope $\frac{1}{R_f}$. In that region the Bistable circuit is in the '- Saturation' region as indicated in Fig. $\ref{set-signal-translated-driving-point}$ and so it will modeled as a $RL$ circuit described in Fig. $\ref{minus-saturation-norton-equivalent}$ and ruled by the equations (\ref{minus-saturation-characteristic}). Hence, the input current $i(t)$ to the Bistable circuit will evolve as a decreasing exponential with time constant $\tau=\frac{L}{R}$.
 \begin{equation}
     i(t)=\frac{E-E_{sat}}{R_f}+[i(P_0) -\frac{E-E_{sat}]}{R_f}e^{\frac{-t}{\tau}}
 \end{equation}
@@ -392,7 +398,7 @@ We can claim that
 \end{equation}
 By the equation($\ref{time-evaluation}$) after some manipulation we obtain:
 \begin{equation}
-    t_{P_1}=t_{P_0} +\tau \log\left(\frac{E}{E-\beta E_{sat}}\right)
+    t_{P_1}=t_{P_0} +\tau \log\left(\frac{2E_{sat}-E}{E_{sat}(2+\beta)-E}\right)
 \end{equation}
 \end{subequations}
 %
@@ -431,11 +437,12 @@ In the 'Linear' region the Bistable circuit is modeled by the following Norton e
   to[L,l_=$L$, i>_=$i_L$, v^=$v_L$]
   (4,0) to[short, -*] (2,0);
 \end{circuitikz}
-\caption{\small Norton equivalent circuit for the OpAmp in the shifted 'Linear' region} \label{linear-norton-equivalent-shifted}
+\caption{\small Norton equivalent circuit for the OpAmp in the shifted 'Linear' region.} \label{linear-norton-equivalent-shifted}
 \end{center}
 \end{figure}
 %
-Because of the negative time constant $\tau$ the $RL$ circuit is unstable and exponentially growing when $t$ tends to $\infty$. The $i(t)$ function is stable when $t$ tends to $-\infty$. The current value tends to current generator $i_{eq}$ value $-E\frac{R1}{R_2 R_f}$ when $t\rightarrow\-\infty$. In the 'Linear' region the current $i(t)$ evolves according to the following exponential expression valid for $t_{P_1} < t < t_{P_3}$:
+
+\noindent Because of the negative time constant $\tau$ the $RL$ circuit is unstable and exponentially growing when $t$ tends to $\infty$. The $i(t)$ function is stable when $t$ tends to $-\infty$. The current value tends to current generator $i_{eq}$ value $-E\frac{R1}{R_2 R_f}$ when $t\rightarrow\-\infty$. In the 'Linear' region the current $i(t)$ evolves according to the following exponential expression valid for $t_{P_1} < t < t_{P_3}$:
 %
 \begin{subequations}
   \begin{equation}
@@ -460,10 +467,11 @@ In the point $P_3$ the behaviour of the circuit changes once more. From $P_3$ to
   to[L,l_=$L$, i>_=$i_L$, v^=$v_L$]
   (4,0) to[short, -*] (2,0);
 \end{circuitikz}
-\caption{\small Norton equivalent circuit for the OpAmp in the shifted '+ Saturation' region} \label{plus-saturation-norton-equivalent-shifted}
+\caption{\small Norton equivalent circuit for the OpAmp in the shifted '+ Saturation' region.} \label{plus-saturation-norton-equivalent-shifted}
 \end{center}
 \end{figure}
-The time constant is positive with value $\tau=\frac{L}{R_f}$.
+
+\noindent The time constant is positive with value $\tau=\frac{L}{R_f}$.
 The time evaluation of the current $i(t)$ is ruled by the following expression from $P_3$ and beyond:
 \begin{equation}
     i(t)=\left(i(P_3) -\frac{E+E_{sat}}{R_f}\right)e^{-\frac{t-t(P_3)}{\tau}}+\frac{E+E_{sat}}{R_f}
@@ -471,7 +479,8 @@ The time evaluation of the current $i(t)$ is ruled by the following expression f
 This is a stable exponentially growing evolution that tends to the value $\frac{E+E_{sat}}{R_f}$ for $t\rightarrow\infty$.\\
 Assume now that the $t_2$ occurs during this phase and so the voltage source $v_s(t)$ goes to $0$. At time $t=t_2$ the driving-point characteristic $\Gamma'$ switches back to $\Gamma$ and the dynamic route must jump horizontally from $P_4$ to $P_5$ at $t=t_2^{+}$. Then, from $P_5$ to $Q_3$ the dynamic route will move along the initial driving-point characteristic until it reaches the stable point $Q_3$. In $Q_3$ the voltage $v=0$ and also the derivative of the current through the inductor $\frac{di_L}{dt}$. Hence, the Bistable circuit will not move out from $Q_3$. It has been forced to change its steady state.\\
 %
-To trigger from $Q_3$, back to $Q_1$, simply apply a similar triggering pulse of opposite polarity, as shown in Fig.($\ref{triggering-reset-signal-translated-driving-point2}$). The resulting dynamic route is shown in the following figure.
+To trigger from $Q_3$, back to $Q_1$, simply apply a similar triggering pulse of opposite polarity, as shown in Fig.($\ref{triggering-reset-signal-translated-driving-point2}$). The resulting dynamic route is shown in Fig. \ref{triggering-reset-signal-translated-driving-point2}.
+%
 \begin{figure}[!ht]
         \centering \includegraphics[width=0.9\columnwidth]{driving-point-characteristic-back-shifted.jpg}
         \caption{\label{triggering-reset-signal-translated-driving-point2}Triggering reset signal and translated 'driving-point' characteristic.
@@ -482,7 +491,7 @@ The Bistable circuit behaviour from $Q_3$ to $Q_1$ will be based on the same con
 %
 \section{LTspice simulations}
 \subsection{Schematic}
-The schematic entry used in LTSpice to simulate the Bistable behaviour is show in Fig. $\ref{LTspice_schematic}$
+The schematic entry used in LTspice to simulate the Bistable behaviour is show in Fig. $\ref{LTspice_schematic}$
 \begin{figure}[!ht]
         \centering \includegraphics[width=0.8\columnwidth]{bistable-schematic.png}
         \caption{\label{LTspice_schematic}LTspice schematic used for simulation.
@@ -495,7 +504,7 @@ In order to force the circuit to start from the stable point $Q_1$ specific init
 .ic i(L1)=-1.5m v(n002)=-15 v(n001)=0
 \end{verbatim}
 %
-\subsection{First simulation: pulse width $T=0.415\ ms$}
+\subsection{First simulation: pulse width \texorpdfstring{$\bm{T=0.415\ ms}$}{} }
 In the first simulation the pulse width has been set to a specific value in order to reproduce the behaviour shown in  Fig. $\ref{set-signal-translated-driving-point}$. In other words when the pulse goes to $0V$ the dynamic route jumps back and the point $P_5$ is still in the right side of the $i-v$ plane. Thus, the following transient from $P_5$ to $Q_3$ occurs as a growing exponential for $i_L$ or a decreasing exponential for $i$.
 The SPICE syntax for a voltage source is
 \begin{verbatim}
@@ -522,8 +531,9 @@ The transition from $Q_3$ to $Q_1$ can be triggered by an opposite signal to the
 %
 \newpage
 %
-\subsection{Second simulation, pulse width $T=0.45\ ms$}
-In this second simulation we are going to increase the pulse width so that when the voltage source returns to $0$ the dynamic route will jump in the left side of the $i-v$ plane and so the transient from $P5$ to $Q3$ will be different from the previous one.
+\subsection{Second simulation, pulse width \texorpdfstring{$T=0.45\ ms$}{}}
+In this second simulation we are going to increase the pulse width so that when the voltage source returns to $0$ the dynamic route will jump in the left side of the $i-v$ plane and so the transient from $P_5$ to $Q_3$ will be different from the previous one.
+%
 \begin{verbatim}
     Vin1 N005 0 PULSE(0 10 6ms 10n 10n 0.45ms 12ms)
 \end{verbatim}
@@ -544,9 +554,9 @@ In other words when the triggering pulse goes to $0$ the point $P5$ will be in t
 %
 \newpage
 %
-\subsection{Third simulation, pulse width $T$ too short, no transition}
-When the triggering pulse is too short the transition will not occur. The third simulation shows this (bad) behaviour. The triggering pulse width is just $0.1ms$. Hence when the triggering pulse return to $0$ the dynamic route is still in the '- Saturation' region and so the dynamic route will jump back to the left side of the $i-v$ plane. The dynamic point will return back to $Q_1$ by a decreasing exponential. No transition takes place and the output voltage (red line) will remain at the logical value $0$.
-In this case the dynamic route will move as in the following Fig. $\ref{dynamic-route-short-width}$.
+\subsection{Third simulation, pulse width \texorpdfstring{$T$}{} too short, no transition}
+When the triggering pulse is too short the transition will not occur. The third simulation shows this (bad) behaviour. The triggering pulse width is just $0.1\ ms$. Hence when the triggering pulse return to $0$ the dynamic route is still in the '- Saturation' region and so the dynamic route will jump back to the left side of the $i-v$ plane. The dynamic point will return back to $Q_1$ by a decreasing exponential. No transition takes place and the output voltage (red line) will remain at the logical value $0$.
+In this case the dynamic route will move as in Fig. $\ref{dynamic-route-short-width}$.
 \begin{figure}[!ht]
         \centering \includegraphics[width=0.6\columnwidth]{driving-point-characteristic-short-width-shifted.jpg}
         \caption{\label{dynamic-route-short-width} Third simulation: dynamic route, no transition.
@@ -566,8 +576,8 @@ In this case the dynamic route will move as in the following Fig. $\ref{dynamic-
 %
 \newpage
 %
-\subsection{Fourth simulation, pulse width $T=0.415\ ms$, but pulse amplitude to small (2V), no transition}
-The transition will not occur whenever the pulse amplitude is too small. In the fourth simulation the amplitude has been set to $2V$.
+\subsection{Fourth simulation, pulse width \texorpdfstring{$T=0.415\ ms$}{}, but pulse amplitude to small (2\ V), no transition}
+The transition will not occur whenever the pulse amplitude is too small. In the fourth simulation the amplitude has been set to $2\ V$.
 %
 \begin{figure}[!ht]
         \centering \includegraphics[width=0.6\columnwidth]{driving-point-characteristic-low-amplitude-shifted.jpg}
@@ -585,23 +595,25 @@ or
 \end{equation}
 \begin{figure}[!ht]
         \centering \includegraphics[width=0.8\columnwidth]{amplitude-short-no-transition.png}
-        \caption{\label{fourth-simulation-amplitude-short}Fourth simulation: amplitude too short $(2V), T=0.415\ ms$, no transition.
+        \caption{\label{fourth-simulation-amplitude-short}Fourth simulation: amplitude too short $(2\ V), T=0.415\ ms$, no transition.
         }
 \end{figure}
 %
-\clearpage
-\newpage
+%\clearpage
+%\newpage
 %
 \section{Conclusion}
 %
-In the present short paper the switching behavior of a Bistable circuit has been analyzed. The Bistable circuit has been modeled by three different RL equivalent circuits. In other words the Bistable circuit has been described by a piecewise-linear driving-point characteristic.\\
-Finally, some LTspice simulations have been done to dive into the transient behaviour of the circuit changing the triggering pulse width and amplitude. The SPICE netlist ha been provided.
+In the present short paper the switching behavior of a Bistable circuit has been analyzed. The Bistable circuit has been modeled by three different RL equivalent circuits. In other words, the Bistable circuit has been described by a piecewise-linear driving-point characteristic.\\
+Finally, some LTspice simulations have been run to dive into the transient behaviour of the circuit changing the triggering pulse width and amplitude. The SPICE netlist has been provided.
 %
 \begin{thebibliography}{99}
-\bibitem[\protect\citeauthoryear{Author}{2010}]{Author2010}
-Author, Leon O. Chua, Charles A. Desoer, Ernest S. Kuh, - Linear and Nonlinear Circuits (1987) (1), McGraw-Hill College.
-\bibitem[\protect\citeauthoryear{Author}{2021}]{Author2021}
-Author, Simon Bramble, - LTspice Tutorial,  (2).
+\bibitem[\protect\citeauthoryear{}{2010}]{Author2010}
+%\bibitem{Author2010}
+Author, Leon O. Chua, Charles A. Desoer, Ernest S. Kuh, - Linear and Nonlinear Circuits (1987), McGraw-Hill College.
+\bibitem[\protect\citeauthoryear{}{2021}]{Author2021}
+%\bibitem{Author2021}
+Author, Simon Bramble, - LTspice Tutorial.
 \end{thebibliography}
 
 %\begin{thebibliography}{9}
